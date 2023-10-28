@@ -175,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: const Color.fromARGB(255, 207, 23, 182),
+                      color: const Color.fromARGB(0, 128, 128, 1),
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(10.0),
