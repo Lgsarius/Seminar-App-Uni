@@ -1,3 +1,3 @@
-# seminar
+# Seminar App
 
 University Project using flutter
