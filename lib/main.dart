@@ -1,9 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,37 +59,11 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> notes = [];
   List<String> deletedNotes = [];
   int _currentIndex = 0;
-  final GoogleSignIn googleSignIn = GoogleSignIn();
-  final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   void initState() {
     super.initState();
     _loadNotes();
-    _initializeFirebase();
-  }
-
-  void _initializeFirebase() async {
-    await Firebase.initializeApp();
-  }
-
-  Future<void> _signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
-
-      final UserCredential authResult =
-          await auth.signInWithCredential(credential);
-      final User? user = authResult.user;
-      // You can now use the user information as needed.
-    } catch (error) {
-      print(error);
-    }
   }
 
   @override
@@ -109,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
           setState(() {
             _currentIndex = index;
           });
-          _closeSnackBar();
+          _closeSnackBar(); // Close SnackBar when navigating between tabs
         },
         items: const [
           BottomNavigationBarItem(
@@ -132,15 +103,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         NoteCreationScreen(onNoteAdded: _addNote),
                   ),
                 );
-                _closeSnackBar();
+                _closeSnackBar(); // Close SnackBar when opening the NoteCreationScreen
               },
               tooltip: 'Notiz erstellen',
               child: const Icon(Icons.add),
             )
-          : ElevatedButton(
-              onPressed: () => _signInWithGoogle(),
-              child: Text('Google Sign-In'),
-            ),
+          : null,
     );
   }
 
@@ -154,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
               return Dismissible(
                 key: UniqueKey(),
                 background: Container(
-                  color: Colors.transparent,
+                  color: Colors.transparent, // Make the background transparent
                 ),
                 onDismissed: (direction) {
                   if (direction == DismissDirection.endToStart) {
@@ -165,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         action: SnackBarAction(
                           label: 'Rückgängig',
                           onPressed: () {
-                            _undoDelete();
+                            _undoDelete(); // Implement the undo action here
                           },
                         ),
                       ),
@@ -175,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: const Color.fromARGB(0, 128, 128, 1),
+                      color: const Color.fromARGB(255, 207, 23, 182),
                       width: 2.0,
                     ),
                     borderRadius: BorderRadius.circular(10.0),
@@ -210,8 +178,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget buildCalendarScreen() {
     return SfCalendar(
-      view: CalendarView.month,
-      dataSource: MeetingDataSource([]),
+      view: CalendarView.month, // Set the initial view to month view
+      dataSource: MeetingDataSource([]), // Add your event data source
+      // Add other calendar properties and customization here
     );
   }
 
@@ -252,8 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: 
-Text('Die Notiz wurde gelöscht.'),
+        content: Text('Die Notiz wurde gelöscht.'),
         action: SnackBarAction(
           label: 'Rückgängig',
           onPressed: () {
@@ -275,7 +243,7 @@ Text('Die Notiz wurde gelöscht.'),
 
   void _closeSnackBar() {
     ScaffoldMessenger.of(context)
-        .hideCurrentSnackBar();
+        .hideCurrentSnackBar(); // Close the current Snackbar
   }
 }
 
@@ -307,7 +275,8 @@ class _NoteCreationScreenState extends State<NoteCreationScreen> {
               decoration:
                   const InputDecoration(labelText: 'Gib hier deine Notiz ein'),
               onEditingComplete: _saveNote,
-              textInputAction: TextInputAction.done,
+              textInputAction:
+                  TextInputAction.done, // Triggers "Done" action on keyboard
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
@@ -387,45 +356,4 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
     }
     Navigator.pop(context);
   }
-}
-
-void _saveNotes(List<String> notes) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setStringList('notes', notes);
-}
-
-void _loadNotes() async {
-  final prefs = await SharedPreferences.getInstance();
-  final savedNotes = prefs.getStringList('notes');
-  if (savedNotes != null) {
-    notes = savedNotes;
-  }
-}
-
-void _addNote(String note) {
-  notes.add(note);
-  _saveNotes(notes);
-}
-
-void _editNote(int index, String newNote) {
-  notes[index] = newNote;
-  _saveNotes(notes);
-}
-
-void _deleteNote(int index) {
-  String deletedNote = notes.removeAt(index);
-  deletedNotes.add(deletedNote);
-  _saveNotes(notes);
-}
-
-void _undoDelete() {
-  if (deletedNotes.isNotEmpty) {
-    String restoredNote = deletedNotes.removeLast();
-    notes.add(restoredNote);
-    _saveNotes(notes);
-  }
-}
-
-void _closeSnackBar() {
-  ScaffoldMessenger.of(context).hideCurrentSnackBar();
 }
