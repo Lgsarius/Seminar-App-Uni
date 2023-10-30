@@ -468,6 +468,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+  Widget buildUniMap(){
+    Return Scaffold(
+     appBar: AppBar(
+       titel: const Text('Map'),
+),
+}
 
   Widget buildCalendarScreen() {
     return Scaffold(
