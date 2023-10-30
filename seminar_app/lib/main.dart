@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -424,29 +423,30 @@ class _MyHomePageState extends State<MyHomePage> {
       drawer: Drawer(
         child: ClipRRect(
           borderRadius: BorderRadius.only(
-      topRight: Radius.circular(20), // Adjust the radius as needed
-      bottomRight: Radius.circular(20), // Adjust the radius as needed
-    ),
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.teal,
-              ),
-              child: Text(
-                'Uni Kassel Helper',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
+            topRight: Radius.circular(20),
+            bottomRight: Radius.circular(20),
+          ),
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.teal,
+                ),
+                child: Text(
+                  'Uni Kassel Helper',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
                 ),
               ),
-            ),
-            _buildDrawerItem(0, Icons.notes, 'Notizen'),
-            _buildDrawerItem(1, Icons.calendar_today, 'Kalender'),
-            _buildDrawerItem(2, Icons.fastfood, 'Mensa'),
-            _buildDrawerItem(3, Icons.map, 'Map'),
-          ],
+              _buildDrawerItem(0, Icons.notes, 'Notizen'),
+              _buildDrawerItem(1, Icons.calendar_today, 'Kalender'),
+              _buildDrawerItem(2, Icons.fastfood, 'Mensa'),
+              _buildDrawerItem(3, Icons.map, 'Map'),
+            ],
+          ),
         ),
       ),
       body: _currentIndex == 0
@@ -484,39 +484,45 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildDrawerItem(int index, IconData icon, String title) {
     final isSelected = _currentIndex == index;
-    const selectedColor =
-        Color.fromARGB(255, 0, 150, 136); // Color for selected items
+    const selectedColor = Color.fromARGB(255, 0, 150, 136);
 
     return Container(
-      decoration: isSelected
-          ? BoxDecoration(
-              border: Border.all(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: isSelected
+            ? Border.all(
                 color: selectedColor,
                 width: 2,
-              ),
-            )
-          : null,
-      child: ListTile(
-        leading: Icon(
-          icon,
-          color: isSelected
-              ? selectedColor
-              : Colors.white, // Icon color for selected items
+              )
+            : null,
+      ),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
         ),
-        title: Text(
-          title,
-          style: TextStyle(
-            color: isSelected
-                ? selectedColor
-                : Colors.white, // Text color for selected items
+        elevation: isSelected ? 5 : 0,
+        child: ListTile(
+          leading: SizedBox(
+            width: 24,
+            height: 24,
+            child: Icon(
+              icon,
+              color: isSelected ? selectedColor : Colors.white,
+            ),
           ),
+          title: Text(
+            title,
+            style: TextStyle(
+              color: isSelected ? selectedColor : Colors.white,
+            ),
+          ),
+          onTap: () {
+            setState(() {
+              _currentIndex = index;
+              Navigator.pop(context);
+            });
+          },
         ),
-        onTap: () {
-          setState(() {
-            _currentIndex = index;
-            Navigator.pop(context);
-          });
-        },
       ),
     );
   }
