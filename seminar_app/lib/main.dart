@@ -422,6 +422,11 @@ class _MyHomePageState extends State<MyHomePage> {
         toolbarHeight: 80,
       ),
       drawer: Drawer(
+        child: ClipRRect(
+          borderRadius: BorderRadius.only(
+      topRight: Radius.circular(20), // Adjust the radius as needed
+      bottomRight: Radius.circular(20), // Adjust the radius as needed
+    ),
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
