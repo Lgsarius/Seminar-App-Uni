@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +40,7 @@ class MyApp extends StatelessWidget {
       ),
       darkTheme: ThemeData.dark(),
       home: const MyHomePage(
-        title: 'Uni Kassel Helper',
+        title: 'Uni Kassel Helper', // Pass the function
       ),
     );
   }
@@ -49,6 +53,9 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
+
+@override
+State<MyHomePage> createState() => _MyHomePageState();
 
 class EventCreationScreen extends StatefulWidget {
   const EventCreationScreen({super.key});
@@ -106,6 +113,55 @@ class ColorPicker extends StatelessWidget {
   }
 }
 
+class MapPage extends StatelessWidget {
+  const MapPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MapScreen();
+  }
+}
+
+class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _MapScreenState createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  InAppWebViewController? webViewController;
+  final GlobalKey webViewKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Column(
+      children: [
+        Expanded(
+          child: InAppWebView(
+            key: webViewKey,
+            initialUrlRequest: URLRequest(
+              url: Uri.parse('https://map.uni-kassel.de/viewer'),
+            ),
+            initialOptions: InAppWebViewGroupOptions(
+              crossPlatform: InAppWebViewOptions(),
+              android: AndroidInAppWebViewOptions(
+                useWideViewPort: true,
+                loadWithOverviewMode: true,
+              ),
+            ),
+            onWebViewCreated: (controller) {
+              webViewController = controller;
+            },
+          ),
+        ),
+      ],
+    ));
+  }
+}
+
 class MensaPage extends StatelessWidget {
   const MensaPage({super.key});
 
@@ -132,9 +188,6 @@ class _MensaScreenState extends State<MensaScreen> {
     return Scaffold(
       backgroundColor:
           const Color.fromARGB(255, 120, 119, 119).withOpacity(0.1),
-      appBar: AppBar(
-        title: const Text('Mensa'),
-      ),
       body: Column(
         children: [
           Expanded(
@@ -142,7 +195,7 @@ class _MensaScreenState extends State<MensaScreen> {
               key: webViewKey,
               initialUrlRequest: URLRequest(
                 url: Uri.parse(
-                    'https://zoomquilt.org'), // Replace with your initial URL
+                    'https://www.studierendenwerk-kassel.de/speiseplaene/zentralmensa-arnold-bode-strasse'),
               ),
               initialOptions: InAppWebViewGroupOptions(
                 crossPlatform: InAppWebViewOptions(),
@@ -260,7 +313,7 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kalender Event hinzuügen'),
+        title: const Text('Kalender Event hinzufügen'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -333,8 +386,15 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> notes = [];
   List<String> deletedNotes = [];
   int _currentIndex = 0;
-  late MeetingDataSource
-      _meetingDataSource; // Declare _meetingDataSource as 'late'
+  late MeetingDataSource _meetingDataSource;
+
+  List<XFile>? get images => null; // Declare _meetingDataSource as 'late'
+  void _addNote(String note, List<XFile> images) {
+    setState(() {
+      notes.add(note);
+    });
+    _saveNotes(notes);
+  }
 
   @override
   void initState() {
@@ -349,57 +409,119 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        leading: Image.asset('images/Kassel.png'),
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
+        ),
+        toolbarHeight: 80,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.teal,
+              ),
+              child: Text(
+                'Uni Kassel Helper',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            _buildDrawerItem(0, Icons.notes, 'Notizen'),
+            _buildDrawerItem(1, Icons.calendar_today, 'Kalender'),
+            _buildDrawerItem(2, Icons.fastfood, 'Mensa'),
+            _buildDrawerItem(3, Icons.map, 'Map'),
+          ],
+        ),
       ),
       body: _currentIndex == 0
           ? buildNotesScreen()
           : _currentIndex == 1
               ? buildCalendarScreen()
-              : buildMensaScreen(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
-          _closeSnackBar(); // Close SnackBar when navigating between tabs
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notes),
-            label: 'Notizen',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Kalender',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fastfood),
-            label: 'Mensa',
-          ),
-        ],
-      ),
+              : _currentIndex == 2
+                  ? buildMensaScreen()
+                  : _currentIndex == 3
+                      ? buildMapScreen()
+                      : Container(),
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton(
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        NoteCreationScreen(onNoteAdded: _addNote),
+                    builder: (context) => NoteCreationScreen(
+                      onNoteAdded: _handleNoteAdded,
+                    ),
                   ),
                 );
-                _closeSnackBar(); // Close SnackBar when opening the NoteCreationScreen
+                _closeSnackBar();
               },
-              tooltip: 'Notiz erstellen',
               child: const Icon(Icons.add),
             )
           : null,
     );
   }
 
+  void _handleNoteAdded(String note, List<XFile> images) {
+    // Implement the logic to add the note and images to your data structure.
+    _addNote(note, images);
+  }
+
+  Widget _buildDrawerItem(int index, IconData icon, String title) {
+    final isSelected = _currentIndex == index;
+    const selectedColor =
+        Color.fromARGB(255, 0, 150, 136); // Color for selected items
+
+    return Container(
+      decoration: isSelected
+          ? BoxDecoration(
+              border: Border.all(
+                color: selectedColor,
+                width: 2,
+              ),
+            )
+          : null,
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: isSelected
+              ? selectedColor
+              : Colors.white, // Icon color for selected items
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            color: isSelected
+                ? selectedColor
+                : Colors.white, // Text color for selected items
+          ),
+        ),
+        onTap: () {
+          setState(() {
+            _currentIndex = index;
+            Navigator.pop(context);
+          });
+        },
+      ),
+    );
+  }
+
   Widget buildMensaScreen() {
     return const MensaPage();
+  }
+
+  Widget buildMapScreen() {
+    return const MapPage();
   }
 
   Widget buildNotesScreen() {
@@ -452,7 +574,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             builder: (context) => NoteEditScreen(
                               initialNote: notes[index],
                               onNoteEdited: (newNote) {
-                                _editNote(index, newNote);
+                                _editNote(index, newNote, images!);
                               },
                             ),
                           ),
@@ -468,18 +590,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-  Widget buildUniMap(){
-    Return Scaffold(
-     appBar: AppBar(
-       titel: const Text('Map'),
-),
-}
 
   Widget buildCalendarScreen() {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kalender'),
-      ),
       body: SfCalendar(
         view: CalendarView.month,
         dataSource: _meetingDataSource, // Use the initialized data source
@@ -515,17 +628,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _addNote(String note) {
-    setState(() {
-      notes.add(note);
-    });
-    _saveNotes(notes);
-  }
-
-  void _editNote(int index, String newNote) {
+  void _editNote(int index, String newNote, List<XFile> images) {
     setState(() {
       notes[index] = newNote;
     });
+    // Save the images in a separate list or storage (e.g., SharedPreferences).
     _saveNotes(notes);
   }
 
@@ -564,24 +671,36 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class NoteCreationScreen extends StatefulWidget {
-  final Function(String) onNoteAdded;
+  final Function(String, List<XFile>) onNoteAdded;
 
   const NoteCreationScreen({Key? key, required this.onNoteAdded})
       : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _NoteCreationScreenState createState() => _NoteCreationScreenState();
 }
 
 class _NoteCreationScreenState extends State<NoteCreationScreen> {
   final TextEditingController _noteController = TextEditingController();
+  final List<XFile> _images = [];
+
+  void _addImage() async {
+    final imagePicker = ImagePicker();
+    final XFile? image =
+        await imagePicker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _images.add(image);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notiz erstellen'),
+        title: const Text('Note erstellen'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -591,17 +710,37 @@ class _NoteCreationScreenState extends State<NoteCreationScreen> {
               controller: _noteController,
               decoration:
                   const InputDecoration(labelText: 'Gib hier deine Notiz ein'),
-              onEditingComplete: _saveNote,
-              textInputAction:
-                  TextInputAction.done, // Triggers "Done" action on keyboard
+              onEditingComplete: () {
+                _saveNote();
+              },
+              textInputAction: TextInputAction.done,
             ),
             const SizedBox(height: 20.0),
             ElevatedButton(
-              onPressed: _saveNote,
+              onPressed: _addImage,
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
               ),
-              child: const Text('Notiz Speichern'),
+              child: const Text('Bild hinzufügen'),
+            ),
+            SizedBox(
+              height: 100.0, // Adjust the height as needed
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _images.length,
+                itemBuilder: (context, index) {
+                  return Image.file(File(_images[index].path));
+                },
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                _saveNote();
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
+              ),
+              child: const Text('Notiz speichern'),
             ),
           ],
         ),
@@ -612,7 +751,7 @@ class _NoteCreationScreenState extends State<NoteCreationScreen> {
   void _saveNote() {
     final note = _noteController.text;
     if (note.isNotEmpty) {
-      widget.onNoteAdded(note);
+      widget.onNoteAdded(note, _images); // Pass both note and images
     }
     Navigator.pop(context);
   }
@@ -658,6 +797,9 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
+              ),
               onPressed: _editNote,
               child: const Text('Änderungen Speichern'),
             ),
