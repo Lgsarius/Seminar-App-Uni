@@ -64,4 +64,11 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+  compile 'com.android.support:multidex:1.0.1'
+}
+android {
+    defaultConfig {
+        multiDexEnabled true
+    }
+}
