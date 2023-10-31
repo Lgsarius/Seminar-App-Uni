@@ -4,7 +4,6 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         primarySwatch: MaterialColor(
-          Color.fromRGBO(233, 30, 99, 1).value,
+          const Color.fromRGBO(233, 30, 99, 1).value,
           const <int, Color>{
             50: Color.fromRGBO(233, 30, 99, 1),
             100: Color.fromRGBO(233, 30, 99, 1),
@@ -112,24 +111,23 @@ class ColorPicker extends StatelessWidget {
   }
 }
 
-class MapPage extends StatelessWidget {
-  const MapPage({super.key});
+class TestPage extends StatelessWidget {
+  const TestPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MapScreen();
+    return const TestScreen();
   }
 }
 
-class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
-
+class TestScreen extends StatefulWidget {
+  const TestScreen({super.key});
   @override
   // ignore: library_private_types_in_public_api
-  _MapScreenState createState() => _MapScreenState();
+  _TestScreenState createState() => _TestScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _TestScreenState extends State<TestScreen> {
   InAppWebViewController? webViewController;
   final GlobalKey webViewKey = GlobalKey();
 
@@ -158,6 +156,90 @@ class _MapScreenState extends State<MapScreen> {
         ),
       ],
     ));
+  }
+}
+
+class ImpressumPage extends StatelessWidget {
+  const ImpressumPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const ImpressumScreen();
+  }
+}
+
+class ImpressumScreen extends StatefulWidget {
+  const ImpressumScreen({super.key});
+  @override
+  // ignore: library_private_types_in_public_api
+  _ImpressumScreenState createState() => _ImpressumScreenState();
+}
+
+class _ImpressumScreenState extends State<ImpressumScreen> {
+  InAppWebViewController? webViewController;
+  final GlobalKey webViewKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Column(
+      children: [
+        Expanded(
+          child: InAppWebView(
+            key: webViewKey,
+            initialUrlRequest: URLRequest(
+              url: Uri.parse('https://map.uni-kassel.de/viewer'),
+            ),
+            initialOptions: InAppWebViewGroupOptions(
+              crossPlatform: InAppWebViewOptions(),
+              android: AndroidInAppWebViewOptions(
+                useWideViewPort: true,
+                loadWithOverviewMode: true,
+              ),
+            ),
+            onWebViewCreated: (controller) {
+              webViewController = controller;
+            },
+          ),
+        ),
+      ],
+    ));
+  }
+}
+
+class MapPage extends StatelessWidget {
+  const MapPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MapScreen();
+  }
+}
+
+class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _MapScreenState createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  InAppWebViewController? webViewController;
+  final GlobalKey webViewKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Column(children: [
+        Expanded(
+          child: Text(
+            "Adresse:\nUniversität Kassel\nMönchebergstraße 19\n34109 Kassel\nDeutschland\n\nTelefon: 0561 804-0\nFax: +49 561 804-2330\nE-Mail: poststelle@uni-kassel.de\nInternet: www.uni-kassel.de",
+            style: TextStyle(fontSize: 14),
+          ),
+        ),
+      ]),
+    );
   }
 }
 
@@ -432,18 +514,45 @@ class _MyHomePageState extends State<MyHomePage> {
               Container(
                 height: 120,
                 width: double.infinity,
-                color: Color.fromARGB(255, 49, 49, 49),
+                color: const Color.fromARGB(255, 49, 49, 49),
                 child: Center(
-                  child: SvgPicture.asset(
-                    'images/UniKassel.svg',
-                    height: 80,
+                  child: Image.asset(
+                    'images/uniKassel.png',
+                    height: 50,
                   ),
                 ),
               ),
+              const SizedBox(
+                  height:
+                      16), // Add a SizedBox to create space between the categories
+              Text('   Bereiche',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[600])),
               _buildDrawerItem(0, Icons.notes, 'Notizen'),
               _buildDrawerItem(1, Icons.calendar_today, 'Kalender'),
               _buildDrawerItem(2, Icons.fastfood, 'Mensa'),
               _buildDrawerItem(3, Icons.map, 'Map'),
+              const SizedBox(
+                  height:
+                      16), // Add a SizedBox to create space between the categories
+              Text('   Andere',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[
+                          600])), // Add a Text widget to label the category
+              _buildDrawerItem(
+                4,
+                Icons.warning,
+                'Test',
+              ), // Add isSubItem parameter to indicate that this is a sub-item
+              _buildDrawerItem(
+                5,
+                Icons.info,
+                'Impressum',
+              ), // Add isSubItem parameter to indicate that this is a sub-item
             ],
           ),
         ),
@@ -456,7 +565,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   ? buildMensaScreen()
                   : _currentIndex == 3
                       ? buildMapScreen()
-                      : Container(),
+                      : _currentIndex == 4
+                          ? buildMapScreen()
+                          : _currentIndex == 5
+                              ? buildMapScreen()
+                              : Container(),
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton(
               onPressed: () {
