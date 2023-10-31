@@ -49,6 +49,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class EventCreationScreen extends StatefulWidget {
+  const EventCreationScreen({super.key});
+
   @override
   _EventCreationScreenState createState() => _EventCreationScreenState();
 }
@@ -57,13 +59,13 @@ class ColorPicker extends StatelessWidget {
   final Color currentColor;
   final ValueChanged<Color> onColorSelected;
 
-  ColorPicker({required this.currentColor, required this.onColorSelected});
+  const ColorPicker({super.key, required this.currentColor, required this.onColorSelected});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        Text('Event Farbe:'),
+        const Text('Event Farbe:'),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
@@ -88,9 +90,9 @@ class ColorPicker extends StatelessWidget {
         width: 40,
         height: 40,
         color: color,
-        margin: EdgeInsets.all(5),
+        margin: const EdgeInsets.all(5),
         child: currentColor == color
-            ? Icon(
+            ? const Icon(
                 Icons.check,
                 color: Colors.white,
               )
@@ -133,7 +135,7 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kalender Event hinzuügen'),
+        title: const Text('Kalender Event hinzuügen'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -149,13 +151,13 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
                   const InputDecoration(labelText: 'Event Beschreibung'),
             ),
             ListTile(
-              leading: Icon(Icons.calendar_today),
+              leading: const Icon(Icons.calendar_today),
               title: Text(
                 "${selectedDate.toLocal()}".split(' ')[0],
               ),
               trailing: ElevatedButton(
                 onPressed: () => _selectDate(context),
-                child: Text('Wähle ein Datum'),
+                child: const Text('Wähle ein Datum'),
               ),
             ),
             ColorPicker(
@@ -178,7 +180,7 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
                 Appointment newEvent = Appointment(
                   startTime: eventDate,
                   endTime: eventDate
-                      .add(Duration(hours: 1)), // Event duration (1 hour)
+                      .add(const Duration(hours: 1)), // Event duration (1 hour)
                   subject: eventTitle,
                   color: eventColor,
                   notes: eventDescription,
@@ -192,7 +194,7 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
 
                 Navigator.pop(context); // Close the event creation page.
               },
-              child: Text('Event hinzuügen'),
+              child: const Text('Event hinzuügen'),
             ),
           ],
         ),
@@ -202,7 +204,7 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  CalendarController _calendarController = CalendarController();
+  final CalendarController _calendarController = CalendarController();
   List<String> notes = [];
   List<String> deletedNotes = [];
   int _currentIndex = 0;
@@ -280,7 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     _deleteNote(index);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Die Notiz wurde gelöscht.'),
+                        content: const Text('Die Notiz wurde gelöscht.'),
                         action: SnackBarAction(
                           label: 'Rückgängig',
                           onPressed: () {
@@ -330,7 +332,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget buildCalendarScreen() {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Calendar'),
+        title: const Text('Calendar'),
       ),
       body: SfCalendar(
         view: CalendarView.month,
@@ -343,11 +345,11 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EventCreationScreen(),
+              builder: (context) => const EventCreationScreen(),
             ),
           );
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -389,7 +391,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Die Notiz wurde gelöscht.'),
+        content: const Text('Die Notiz wurde gelöscht.'),
         action: SnackBarAction(
           label: 'Rückgängig',
           onPressed: () {
@@ -449,10 +451,10 @@ class _NoteCreationScreenState extends State<NoteCreationScreen> {
             const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: _saveNote,
-              child: const Text('Notiz Speichern'),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
               ),
+              child: const Text('Notiz Speichern'),
             ),
           ],
         ),

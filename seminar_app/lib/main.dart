@@ -4,7 +4,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image/image.dart' as img;
+import 'package:flutter_svg/flutter_svg.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,18 +21,18 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         primarySwatch: MaterialColor(
-          const Color.fromARGB(255, 0, 150, 136).value,
+          Color.fromRGBO(233, 30, 99, 1).value,
           const <int, Color>{
-            50: Color.fromARGB(255, 0, 150, 136),
-            100: Color.fromARGB(255, 0, 150, 136),
-            200: Color.fromARGB(255, 0, 150, 136),
-            300: Color.fromARGB(255, 0, 150, 136),
-            400: Color.fromARGB(255, 0, 150, 136),
-            500: Color.fromARGB(255, 0, 150, 136),
-            600: Color.fromARGB(255, 0, 150, 136),
-            700: Color.fromARGB(255, 0, 150, 136),
-            800: Color.fromARGB(255, 0, 150, 136),
-            900: Color.fromARGB(255, 0, 150, 136),
+            50: Color.fromRGBO(233, 30, 99, 1),
+            100: Color.fromRGBO(233, 30, 99, 1),
+            200: Color.fromRGBO(233, 30, 99, 1),
+            300: Color.fromRGBO(233, 30, 99, 1),
+            400: Color.fromRGBO(233, 30, 99, 1),
+            500: Color.fromRGBO(233, 30, 99, 1),
+            600: Color.fromRGBO(233, 30, 99, 1),
+            700: Color.fromRGBO(233, 30, 99, 1),
+            800: Color.fromRGBO(233, 30, 99, 1),
+            900: Color.fromRGBO(233, 30, 99, 1),
           },
         ),
         brightness: Brightness.dark,
@@ -381,7 +381,7 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  CalendarController _calendarController = CalendarController();
+  final CalendarController _calendarController = CalendarController();
   List<String> notes = [];
   List<String> deletedNotes = [];
   int _currentIndex = 0;
@@ -422,22 +422,21 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: Drawer(
         child: ClipRRect(
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topRight: Radius.circular(20),
             bottomRight: Radius.circular(20),
           ),
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.teal,
-                ),
-                child: Text(
-                  'Uni Kassel Helper',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
+              Container(
+                height: 120,
+                width: double.infinity,
+                color: Color.fromARGB(255, 49, 49, 49),
+                child: Center(
+                  child: SvgPicture.asset(
+                    'images/UniKassel.svg',
+                    height: 80,
                   ),
                 ),
               ),
@@ -484,7 +483,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildDrawerItem(int index, IconData icon, String title) {
     final isSelected = _currentIndex == index;
-    const selectedColor = Color.fromARGB(255, 0, 150, 136);
+    const selectedColor = Color.fromRGBO(233, 30, 99, 1);
 
     return Container(
       decoration: BoxDecoration(
@@ -568,7 +567,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: const Color.fromARGB(255, 0, 150, 136),
+                        color: const Color.fromRGBO(233, 30, 99, 1),
                         width: 2.0,
                       ),
                       borderRadius: BorderRadius.circular(10.0),
@@ -730,7 +729,8 @@ class _NoteCreationScreenState extends State<NoteCreationScreen> {
             ElevatedButton(
               onPressed: _addImage,
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    const Color.fromRGBO(233, 30, 99, 1)),
               ),
               child: const Text('Bild hinzufügen'),
             ),
@@ -749,7 +749,7 @@ class _NoteCreationScreenState extends State<NoteCreationScreen> {
                 _saveNote();
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.pink),
               ),
               child: const Text('Notiz speichern'),
             ),
@@ -809,7 +809,7 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
             const SizedBox(height: 16.0),
             ElevatedButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.pink),
               ),
               onPressed: _editNote,
               child: const Text('Änderungen Speichern'),
