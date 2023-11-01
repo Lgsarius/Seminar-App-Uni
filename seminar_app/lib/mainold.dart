@@ -20,18 +20,18 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         primarySwatch: MaterialColor(
-          const Color.fromRGBO(233, 30, 99, 1).value,
+          const Color.fromARGB(255, 0, 150, 136).value,
           const <int, Color>{
-            50: Color.fromRGBO(233, 30, 99, 1),
-            100: Color.fromRGBO(233, 30, 99, 1),
-            200: Color.fromRGBO(233, 30, 99, 1),
-            300: Color.fromRGBO(233, 30, 99, 1),
-            400: Color.fromRGBO(233, 30, 99, 1),
-            500: Color.fromRGBO(233, 30, 99, 1),
-            600: Color.fromRGBO(233, 30, 99, 1),
-            700: Color.fromRGBO(233, 30, 99, 1),
-            800: Color.fromRGBO(233, 30, 99, 1),
-            900: Color.fromRGBO(233, 30, 99, 1),
+            50: Color.fromARGB(255, 0, 150, 136),
+            100: Color.fromARGB(255, 0, 150, 136),
+            200: Color.fromARGB(255, 0, 150, 136),
+            300: Color.fromARGB(255, 0, 150, 136),
+            400: Color.fromARGB(255, 0, 150, 136),
+            500: Color.fromARGB(255, 0, 150, 136),
+            600: Color.fromARGB(255, 0, 150, 136),
+            700: Color.fromARGB(255, 0, 150, 136),
+            800: Color.fromARGB(255, 0, 150, 136),
+            900: Color.fromARGB(255, 0, 150, 136),
           },
         ),
         brightness: Brightness.dark,
@@ -111,102 +111,6 @@ class ColorPicker extends StatelessWidget {
   }
 }
 
-class TestPage extends StatelessWidget {
-  const TestPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const TestScreen();
-  }
-}
-
-class TestScreen extends StatefulWidget {
-  const TestScreen({super.key});
-  @override
-  // ignore: library_private_types_in_public_api
-  _TestScreenState createState() => _TestScreenState();
-}
-
-class _TestScreenState extends State<TestScreen> {
-  InAppWebViewController? webViewController;
-  final GlobalKey webViewKey = GlobalKey();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
-      children: [
-        Expanded(
-          child: InAppWebView(
-            key: webViewKey,
-            initialUrlRequest: URLRequest(
-              url: Uri.parse('https://map.uni-kassel.de/viewer'),
-            ),
-            initialOptions: InAppWebViewGroupOptions(
-              crossPlatform: InAppWebViewOptions(),
-              android: AndroidInAppWebViewOptions(
-                useWideViewPort: true,
-                loadWithOverviewMode: true,
-              ),
-            ),
-            onWebViewCreated: (controller) {
-              webViewController = controller;
-            },
-          ),
-        ),
-      ],
-    ));
-  }
-}
-
-class ImpressumPage extends StatelessWidget {
-  const ImpressumPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const ImpressumScreen();
-  }
-}
-
-class ImpressumScreen extends StatefulWidget {
-  const ImpressumScreen({super.key});
-  @override
-  // ignore: library_private_types_in_public_api
-  _ImpressumScreenState createState() => _ImpressumScreenState();
-}
-
-class _ImpressumScreenState extends State<ImpressumScreen> {
-  InAppWebViewController? webViewController;
-  final GlobalKey webViewKey = GlobalKey();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
-      children: [
-        Expanded(
-          child: InAppWebView(
-            key: webViewKey,
-            initialUrlRequest: URLRequest(
-              url: Uri.parse('https://map.uni-kassel.de/viewer'),
-            ),
-            initialOptions: InAppWebViewGroupOptions(
-              crossPlatform: InAppWebViewOptions(),
-              android: AndroidInAppWebViewOptions(
-                useWideViewPort: true,
-                loadWithOverviewMode: true,
-              ),
-            ),
-            onWebViewCreated: (controller) {
-              webViewController = controller;
-            },
-          ),
-        ),
-      ],
-    ));
-  }
-}
-
 class MapPage extends StatelessWidget {
   const MapPage({super.key});
 
@@ -230,16 +134,29 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Column(children: [
+    return Scaffold(
+        body: Column(
+      children: [
         Expanded(
-          child: Text(
-            "Adresse:\nUniversität Kassel\nMönchebergstraße 19\n34109 Kassel\nDeutschland\n\nTelefon: 0561 804-0\nFax: +49 561 804-2330\nE-Mail: poststelle@uni-kassel.de\nInternet: www.uni-kassel.de",
-            style: TextStyle(fontSize: 14),
+          child: InAppWebView(
+            key: webViewKey,
+            initialUrlRequest: URLRequest(
+              url: Uri.parse('https://map.uni-kassel.de/viewer'),
+            ),
+            initialOptions: InAppWebViewGroupOptions(
+              crossPlatform: InAppWebViewOptions(),
+              android: AndroidInAppWebViewOptions(
+                useWideViewPort: true,
+                loadWithOverviewMode: true,
+              ),
+            ),
+            onWebViewCreated: (controller) {
+              webViewController = controller;
+            },
           ),
         ),
-      ]),
-    );
+      ],
+    ));
   }
 }
 
@@ -267,104 +184,97 @@ class _MensaScreenState extends State<MensaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor:
-            const Color.fromARGB(255, 120, 119, 119).withOpacity(0.1),
-        body: Column(
-          children: [
-            Expanded(
-              child: InAppWebView(
-                key: webViewKey,
-                initialUrlRequest: URLRequest(
-                  url: Uri.parse(
-                      'https://www.studierendenwerk-kassel.de/speiseplaene/zentralmensa-arnold-bode-strasse'),
-                ),
-                initialOptions: InAppWebViewGroupOptions(
-                  crossPlatform: InAppWebViewOptions(),
-                  android: AndroidInAppWebViewOptions(
-                    useWideViewPort: true,
-                    loadWithOverviewMode: true,
-                  ),
-                ),
-                onWebViewCreated: (controller) {
-                  webViewController = controller;
-                },
+      backgroundColor:
+          const Color.fromARGB(255, 120, 119, 119).withOpacity(0.1),
+      body: Column(
+        children: [
+          Expanded(
+            child: InAppWebView(
+              key: webViewKey,
+              initialUrlRequest: URLRequest(
+                url: Uri.parse(
+                    'https://www.studierendenwerk-kassel.de/speiseplaene/zentralmensa-arnold-bode-strasse'),
               ),
-            ),
-          ],
-        ),
-        floatingActionButton: Theme(
-          data: ThemeData(
-            floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: Color.fromRGBO(
-                  233, 30, 99, 1), // Set the background color for FAB
+              initialOptions: InAppWebViewGroupOptions(
+                crossPlatform: InAppWebViewOptions(),
+                android: AndroidInAppWebViewOptions(
+                  useWideViewPort: true,
+                  loadWithOverviewMode: true,
+                ),
+              ),
+              onWebViewCreated: (controller) {
+                webViewController = controller;
+              },
             ),
           ),
-          child: FloatingActionButton(
-            onPressed: () {
-              void navigateToUrl(String url) async {
-                if (webViewController != null) {
-                  await webViewController!.loadUrl(
-                    urlRequest: URLRequest(url: Uri.parse(url)),
-                  );
-                }
-              }
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          void navigateToUrl(String url) async {
+            if (webViewController != null) {
+              await webViewController!.loadUrl(
+                urlRequest: URLRequest(url: Uri.parse(url)),
+              );
+            }
+          }
 
-              showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return Container(
-                    color: const Color.fromARGB(255, 120, 119, 119).withOpacity(
-                        0.1), // Set the background color to transparent
-                    child: Column(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            navigateToUrl(
-                                'https://www.studierendenwerk-kassel.de/speiseplaene/zentralmensa-arnold-bode-strasse');
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Zentralmensa Arnold-Bode-Straße'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            navigateToUrl(
-                                'https://www.studierendenwerk-kassel.de/nc/mensahoppergoesmoritz');
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Moritz Abendangebot'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            navigateToUrl(
-                                'https://www.studierendenwerk-kassel.de/speiseplaene/torcafe');
-                            Navigator.pop(context);
-                          },
-                          child: const Text('TorCafé'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            navigateToUrl('https://mensa71-url.com');
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Mensa 71, Wilhelmshöher Allee'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            navigateToUrl(
-                                'https://www.studierendenwerk-kassel.de/speiseplaene/mensa-heinr-plett-strasse');
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Mensa Heinr.-Plett-Straße'),
-                        ),
-                      ],
+          showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return Container(
+                color: const Color.fromARGB(255, 120, 119, 119).withOpacity(
+                    0.1), // Set the background color to transparent
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        navigateToUrl(
+                            'https://www.studierendenwerk-kassel.de/speiseplaene/zentralmensa-arnold-bode-strasse');
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Zentralmensa Arnold-Bode-Straße'),
                     ),
-                  );
-                },
+                    ElevatedButton(
+                      onPressed: () {
+                        navigateToUrl(
+                            'https://www.studierendenwerk-kassel.de/nc/mensahoppergoesmoritz');
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Moritz Abendangebot'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        navigateToUrl(
+                            'https://www.studierendenwerk-kassel.de/speiseplaene/torcafe');
+                        Navigator.pop(context);
+                      },
+                      child: const Text('TorCafé'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        navigateToUrl('https://mensa71-url.com');
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Mensa 71, Wilhelmshöher Allee'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        navigateToUrl(
+                            'https://www.studierendenwerk-kassel.de/speiseplaene/mensa-heinr-plett-strasse');
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Mensa Heinr.-Plett-Straße'),
+                    ),
+                  ],
+                ),
               );
             },
-            child: const Icon(Icons.menu),
-          ),
-        ));
+          );
+        },
+        child: const Icon(Icons.menu),
+      ),
+    );
   }
 }
 
@@ -518,48 +428,22 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              Container(
-                height: 120,
-                width: double.infinity,
-                color: const Color.fromARGB(255, 49, 49, 49),
-                child: Center(
-                  child: Image.asset(
-                    'images/uniKassel.png',
-                    height: 50,
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Colors.teal,
+                ),
+                child: Text(
+                  'Uni Kassel Helper',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
                   ),
                 ),
               ),
-              const SizedBox(
-                  height:
-                      16), // Add a SizedBox to create space between the categories
-              Text('   Bereiche',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[600])),
               _buildDrawerItem(0, Icons.notes, 'Notizen'),
               _buildDrawerItem(1, Icons.calendar_today, 'Kalender'),
               _buildDrawerItem(2, Icons.fastfood, 'Mensa'),
               _buildDrawerItem(3, Icons.map, 'Map'),
-              const SizedBox(
-                  height:
-                      16), // Add a SizedBox to create space between the categories
-              Text('   Andere',
-                  style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[
-                          600])), // Add a Text widget to label the category
-              _buildDrawerItem(
-                4,
-                Icons.warning,
-                'Test',
-              ), // Add isSubItem parameter to indicate that this is a sub-item
-              _buildDrawerItem(
-                5,
-                Icons.info,
-                'Impressum',
-              ), // Add isSubItem parameter to indicate that this is a sub-item
             ],
           ),
         ),
@@ -571,34 +455,22 @@ class _MyHomePageState extends State<MyHomePage> {
               : _currentIndex == 2
                   ? buildMensaScreen()
                   : _currentIndex == 3
-                      ? buildImpressumScreen()
-                      : _currentIndex == 4
-                          ? buildTestScreen()
-                          : _currentIndex == 5
-                              ? buildMapScreen()
-                              : Container(),
+                      ? buildMapScreen()
+                      : Container(),
       floatingActionButton: _currentIndex == 0
-          ? Theme(
-              data: ThemeData(
-                floatingActionButtonTheme: const FloatingActionButtonThemeData(
-                  backgroundColor: Color.fromRGBO(
-                      233, 30, 99, 1), // Set the background color for FAB
-                ),
-              ),
-              child: FloatingActionButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NoteCreationScreen(
-                        onNoteAdded: _handleNoteAdded,
-                      ),
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NoteCreationScreen(
+                      onNoteAdded: _handleNoteAdded,
                     ),
-                  );
-                  _closeSnackBar();
-                },
-                child: const Icon(Icons.add),
-              ),
+                  ),
+                );
+                _closeSnackBar();
+              },
+              child: const Icon(Icons.add),
             )
           : null,
     );
@@ -611,7 +483,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildDrawerItem(int index, IconData icon, String title) {
     final isSelected = _currentIndex == index;
-    const selectedColor = Color.fromRGBO(233, 30, 99, 1);
+    const selectedColor = Color.fromARGB(255, 0, 150, 136);
 
     return Container(
       decoration: BoxDecoration(
@@ -662,14 +534,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return const MapPage();
   }
 
-  Widget buildTestScreen() {
-    return const TestPage();
-  }
-
-  Widget buildImpressumScreen() {
-    return const ImpressumPage();
-  }
-
   Widget buildNotesScreen() {
     return Scaffold(
       appBar: AppBar(
@@ -703,7 +567,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: const Color.fromRGBO(233, 30, 99, 1),
+                        color: const Color.fromARGB(255, 0, 150, 136),
                         width: 2.0,
                       ),
                       borderRadius: BorderRadius.circular(10.0),
@@ -744,25 +608,17 @@ class _MyHomePageState extends State<MyHomePage> {
         dataSource: _meetingDataSource, // Use the initialized data source
         firstDayOfWeek: 1,
       ),
-      floatingActionButton: Theme(
-        data: ThemeData(
-          floatingActionButtonTheme: const FloatingActionButtonThemeData(
-            backgroundColor: Color.fromRGBO(
-                233, 30, 99, 1), // Set the background color for FAB
-          ),
-        ),
-        child: FloatingActionButton(
-          onPressed: () {
-            // When the FAB is pressed, open a screen to add a calendar event.
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const EventCreationScreen(),
-              ),
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // When the FAB is pressed, open a screen to add a calendar event.
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const EventCreationScreen(),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -873,8 +729,7 @@ class _NoteCreationScreenState extends State<NoteCreationScreen> {
             ElevatedButton(
               onPressed: _addImage,
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
-                    const Color.fromRGBO(233, 30, 99, 1)),
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
               ),
               child: const Text('Bild hinzufügen'),
             ),
@@ -893,7 +748,7 @@ class _NoteCreationScreenState extends State<NoteCreationScreen> {
                 _saveNote();
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.pink),
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
               ),
               child: const Text('Notiz speichern'),
             ),
@@ -953,7 +808,7 @@ class _NoteEditScreenState extends State<NoteEditScreen> {
             const SizedBox(height: 16.0),
             ElevatedButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.pink),
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.teal),
               ),
               onPressed: _editNote,
               child: const Text('Änderungen Speichern'),
