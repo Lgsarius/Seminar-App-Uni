@@ -36,7 +36,6 @@ class MyApp extends StatelessWidget {
         ),
         brightness: Brightness.dark,
       ),
-      darkTheme: ThemeData.dark(),
       home: const MyHomePage(
         title: 'Uni Kassel Helper', // Pass the function
       ),
@@ -56,78 +55,84 @@ class MyHomePage extends StatefulWidget {
 State<MyHomePage> createState() => _MyHomePageState();
 
 class EventCreationScreen extends StatefulWidget {
-  const EventCreationScreen({super.key});
+  final Function(Appointment) onEventAdded;
+
+  const EventCreationScreen({Key? key, required this.onEventAdded})
+      : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
   _EventCreationScreenState createState() => _EventCreationScreenState();
 }
 
-class ColorPicker extends StatelessWidget {
-  final Color currentColor;
-  final ValueChanged<Color> onColorSelected;
+class _EventCreationScreenState extends State<EventCreationScreen> {
+  DateTime selectedDate = DateTime.now();
+  String eventTitle = '';
+  DateTime startTime = DateTime.now();
+  DateTime endTime = DateTime.now().add(const Duration(hours: 1));
 
-  const ColorPicker(
-      {super.key, required this.currentColor, required this.onColorSelected});
+  void createEvent() {
+    // Create an Appointment object with the input event details
+    final event = Appointment(
+      startTime: startTime,
+      endTime: endTime,
+      subject: eventTitle,
+      color: Colors.blue, // You can customize the event color
+    );
+
+    // Pass the created event back to the calendar screen
+    widget.onEventAdded(event);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        const Text('Event Farbe:'),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Create Event'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
           children: <Widget>[
-            colorButton(Colors.blue),
-            colorButton(Colors.red),
-            colorButton(Colors.green),
-            colorButton(Colors.yellow),
-            colorButton(Colors.purple),
-            colorButton(Colors.orange),
+            TextField(
+              onChanged: (value) {
+                setState(() {
+                  eventTitle = value;
+                });
+              },
+              decoration: const InputDecoration(labelText: 'Event Title'),
+            ),
+            // You can add fields for start and end times here
+            ElevatedButton(
+              onPressed: () {
+                createEvent();
+              },
+              child: const Text('Create Event'),
+            ),
           ],
         ),
-      ],
-    );
-  }
-
-  Widget colorButton(Color color) {
-    return InkWell(
-      onTap: () {
-        onColorSelected(color);
-      },
-      child: Container(
-        width: 40,
-        height: 40,
-        color: color,
-        margin: const EdgeInsets.all(5),
-        child: currentColor == color
-            ? const Icon(
-                Icons.check,
-                color: Colors.white,
-              )
-            : null,
       ),
     );
   }
 }
 
-class TestPage extends StatelessWidget {
-  const TestPage({super.key});
+class BibPage extends StatelessWidget {
+  const BibPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const TestScreen();
+    return const BibScreen();
   }
 }
 
-class TestScreen extends StatefulWidget {
-  const TestScreen({super.key});
+class BibScreen extends StatefulWidget {
+  const BibScreen({super.key});
   @override
   // ignore: library_private_types_in_public_api
-  _TestScreenState createState() => _TestScreenState();
+  _BibScreenState createState() => _BibScreenState();
 }
 
-class _TestScreenState extends State<TestScreen> {
+class _BibScreenState extends State<BibScreen> {
   InAppWebViewController? webViewController;
   final GlobalKey webViewKey = GlobalKey();
 
@@ -140,7 +145,7 @@ class _TestScreenState extends State<TestScreen> {
           child: InAppWebView(
             key: webViewKey,
             initialUrlRequest: URLRequest(
-              url: Uri.parse('https://map.uni-kassel.de/viewer'),
+              url: Uri.parse('https://karla.hds.hebis.de/'),
             ),
             initialOptions: InAppWebViewGroupOptions(
               crossPlatform: InAppWebViewOptions(),
@@ -168,14 +173,14 @@ class ImpressumPage extends StatelessWidget {
   }
 }
 
-class ImpressumScreen extends StatefulWidget {
-  const ImpressumScreen({super.key});
+class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
   @override
   // ignore: library_private_types_in_public_api
-  _ImpressumScreenState createState() => _ImpressumScreenState();
+  _MapScreenState createState() => _MapScreenState();
 }
 
-class _ImpressumScreenState extends State<ImpressumScreen> {
+class _MapScreenState extends State<MapScreen> {
   InAppWebViewController? webViewController;
   final GlobalKey webViewKey = GlobalKey();
 
@@ -216,15 +221,15 @@ class MapPage extends StatelessWidget {
   }
 }
 
-class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+class ImpressumScreen extends StatefulWidget {
+  const ImpressumScreen({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
-  _MapScreenState createState() => _MapScreenState();
+  _ImpressumScreenState createState() => _ImpressumScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _ImpressumScreenState extends State<ImpressumScreen> {
   InAppWebViewController? webViewController;
   final GlobalKey webViewKey = GlobalKey();
 
@@ -374,99 +379,24 @@ class MeetingDataSource extends CalendarDataSource {
   }
 }
 
-class _EventCreationScreenState extends State<EventCreationScreen> {
-  DateTime selectedDate = DateTime.now();
-  Color selectedColor = Colors.blue; // Default color
-  late MeetingDataSource _meetingDataSource;
-  final TextEditingController _eventTitleController = TextEditingController();
-  final TextEditingController _eventDescriptionController =
-      TextEditingController();
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
+class MyCalendarDataSource extends CalendarDataSource {
+  MyCalendarDataSource(List<Appointment> source) {
+    appointments = source;
   }
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kalender Event hinzufügen'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: _eventTitleController,
-              decoration: const InputDecoration(labelText: 'Event Name'),
-            ),
-            TextField(
-              controller: _eventDescriptionController,
-              decoration:
-                  const InputDecoration(labelText: 'Event Beschreibung'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.calendar_today),
-              title: Text(
-                "${selectedDate.toLocal()}".split(' ')[0],
-              ),
-              trailing: ElevatedButton(
-                onPressed: () => _selectDate(context),
-                child: const Text('Wähle ein Datum'),
-              ),
-            ),
-            ColorPicker(
-              currentColor: selectedColor,
-              onColorSelected: (Color color) {
-                setState(() {
-                  selectedColor = color;
-                });
-              },
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Get event details from controllers
-                String eventTitle = _eventTitleController.text;
-                String eventDescription = _eventDescriptionController.text;
-                DateTime eventDate = selectedDate;
-                Color eventColor = selectedColor;
+class MyAppointment {
+  MyAppointment({
+    required this.subject,
+    required this.startTime,
+    required this.endTime,
+    this.color,
+  });
 
-                // Create a new Appointment object
-                Appointment newEvent = Appointment(
-                  startTime: eventDate,
-                  endTime: eventDate
-                      .add(const Duration(hours: 1)), // Event duration (1 hour)
-                  subject: eventTitle,
-                  color: eventColor,
-                  notes: eventDescription,
-                );
-
-                // Add the event to the MeetingDataSource
-                _meetingDataSource.appointments!.add(newEvent);
-
-                // Update the calendar display
-                setState(() {});
-
-                Navigator.pop(context); // Close the event creation page.
-              },
-              child: const Text('Event hinzuügen'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  String subject;
+  DateTime startTime;
+  DateTime endTime;
+  Color? color;
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -541,6 +471,8 @@ class _MyHomePageState extends State<MyHomePage> {
               _buildDrawerItem(1, Icons.calendar_today, 'Kalender'),
               _buildDrawerItem(2, Icons.fastfood, 'Mensa'),
               _buildDrawerItem(3, Icons.map, 'Map'),
+              _buildDrawerItem(4, Icons.book,
+                  'Bibiliothek Suche'), // Add isSubItem parameter to indicate that this is a sub-item
               const SizedBox(
                   height:
                       16), // Add a SizedBox to create space between the categories
@@ -550,11 +482,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontWeight: FontWeight.bold,
                       color: Colors.grey[
                           600])), // Add a Text widget to label the category
-              _buildDrawerItem(
-                4,
-                Icons.warning,
-                'Test',
-              ), // Add isSubItem parameter to indicate that this is a sub-item
+              // Add isSubItem parameter to indicate that this is a sub-item
               _buildDrawerItem(
                 5,
                 Icons.info,
@@ -571,11 +499,11 @@ class _MyHomePageState extends State<MyHomePage> {
               : _currentIndex == 2
                   ? buildMensaScreen()
                   : _currentIndex == 3
-                      ? buildImpressumScreen()
+                      ? buildMapScreen()
                       : _currentIndex == 4
-                          ? buildTestScreen()
+                          ? buildBipScreen()
                           : _currentIndex == 5
-                              ? buildMapScreen()
+                              ? buildImpressumScreen()
                               : Container(),
       floatingActionButton: _currentIndex == 0
           ? Theme(
@@ -662,8 +590,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return const MapPage();
   }
 
-  Widget buildTestScreen() {
-    return const TestPage();
+  Widget buildBipScreen() {
+    return const BibPage();
   }
 
   Widget buildImpressumScreen() {
@@ -690,14 +618,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   onDismissed: (direction) {
                     if (direction == DismissDirection.endToStart) {
                       _deleteNote(index);
-                      //  ScaffoldMessenger.of(context).showSnackBar(
-                      //  SnackBar(
-                      //  content: const Text('Die Notiz wurde gelöscht.'),
-                      // action: SnackBarAction(
-                      //   label: 'Rückgängig2',
-                      // onPressed: () {
-                      // _undoDelete(
-                      //      deletedNote);
                     }
                   },
                   child: Container(
@@ -737,34 +657,81 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  List<MyAppointment> myAppointments = [
+    MyAppointment(
+      subject: 'Meeting',
+      startTime: DateTime(2023, 11, 1, 10, 0),
+      endTime: DateTime(2023, 11, 1, 11, 0),
+      color: Colors.blue,
+    ),
+    // Add more appointments here
+  ];
+
+  MyCalendarDataSource getCalendarDataSource() {
+    return MyCalendarDataSource(myAppointments.cast<Appointment>());
+  }
+
   Widget buildCalendarScreen() {
+    CalendarView calendarView = CalendarView.week;
+    final CalendarController controller = CalendarController();
+
     return Scaffold(
-      body: SfCalendar(
-        view: CalendarView.month,
-        dataSource: _meetingDataSource, // Use the initialized data source
-        firstDayOfWeek: 1,
-      ),
-      floatingActionButton: Theme(
-        data: ThemeData(
-          floatingActionButtonTheme: const FloatingActionButtonThemeData(
-            backgroundColor: Color.fromRGBO(
-                233, 30, 99, 1), // Set the background color for FAB
-          ),
-        ),
-        child: FloatingActionButton(
-          onPressed: () {
-            // When the FAB is pressed, open a screen to add a calendar event.
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const EventCreationScreen(),
+      body: Column(
+        children: [
+          Expanded(
+            child: SfCalendar(
+              view: calendarView,
+              allowedViews: const [
+                CalendarView.day,
+                CalendarView.week,
+                CalendarView.month,
+              ],
+              firstDayOfWeek: 1,
+              controller: controller,
+              initialDisplayDate: DateTime.now(),
+              dataSource: getCalendarDataSource(),
+              onTap: (CalendarTapDetails calendarTapDetails) {
+                calendarTapped(calendarTapDetails, controller);
+              },
+              monthViewSettings: const MonthViewSettings(
+                navigationDirection: MonthNavigationDirection.vertical,
               ),
-            );
-          },
-          child: const Icon(Icons.add),
-        ),
+            ),
+          )
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Navigate to the event creation screen
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EventCreationScreen(
+                onEventAdded: (Appointment appointment) {
+                  // Add the created event to the data source
+                  _meetingDataSource.appointments?.add(appointment);
+                  setState(() {});
+                  Navigator.pop(context); // Close the event creation screen
+                },
+              ),
+            ),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
+  }
+
+  void calendarTapped(
+      CalendarTapDetails calendarTapDetails, CalendarController controller) {
+    if (controller.view == CalendarView.month &&
+        calendarTapDetails.targetElement == CalendarElement.calendarCell) {
+      controller.view = CalendarView.day;
+    } else if ((controller.view == CalendarView.week ||
+            controller.view == CalendarView.workWeek) &&
+        calendarTapDetails.targetElement == CalendarElement.viewHeader) {
+      controller.view = CalendarView.day;
+    }
   }
 
   void _saveNotes(List<String> notes) async {
@@ -831,6 +798,7 @@ class NoteCreationScreen extends StatefulWidget {
       : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _NoteCreationScreenState createState() => _NoteCreationScreenState();
 }
 
